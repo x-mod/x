@@ -4,9 +4,8 @@ import (
 	"crypto/md5"
 	"encoding/base64"
 	"encoding/hex"
+	"fmt"
 	"hash"
-
-	"github.com/x-mod/errors"
 )
 
 type HashCipher struct {
@@ -51,7 +50,7 @@ func (hc *HashCipher) Bytes() ([]byte, error) {
 func (hc *HashCipher) String() (string, error) {
 	bs, err := hc.Bytes()
 	if err != nil {
-		return "", errors.Annotate(err, "string")
+		return "", fmt.Errorf("string: %w", err)
 	}
 	return string(bs), nil
 }
@@ -59,7 +58,7 @@ func (hc *HashCipher) String() (string, error) {
 func (hc *HashCipher) Hex() (string, error) {
 	bs, err := hc.Bytes()
 	if err != nil {
-		return "", errors.Annotate(err, "hex")
+		return "", fmt.Errorf("hex: %w", err)
 	}
 	return hex.EncodeToString(bs), nil
 }
@@ -67,7 +66,7 @@ func (hc *HashCipher) Hex() (string, error) {
 func (hc *HashCipher) Base64() (string, error) {
 	bs, err := hc.Bytes()
 	if err != nil {
-		return "", errors.Annotate(err, "base64")
+		return "", fmt.Errorf("base64: %w", err)
 	}
 	return base64.StdEncoding.EncodeToString(bs), nil
 }
