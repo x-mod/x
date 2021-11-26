@@ -32,6 +32,10 @@ func (at *AutoTxer) Close() error {
 	return at.Commit()
 }
 
+func (at *AutoTxer) SetErr(err error) {
+	at.err = err
+}
+
 func (at *AutoTxer) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
 	result, err := at.Tx.ExecContext(ctx, query, args...)
 	at.err = err
