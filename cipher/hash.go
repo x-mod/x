@@ -29,8 +29,7 @@ func HashAlgorithm(algo hash.Hash) HashCipherOpt {
 
 func Hash(src []byte, opts ...HashCipherOpt) *HashCipher {
 	hc := &HashCipher{
-		src: src,
-		// salt: []byte{0x19, 0x80, 0x03, 0x06, 0x20, 0x08, 0x03, 0x25},
+		src:  src,
 		salt: []byte{},
 		algo: md5.New(),
 	}

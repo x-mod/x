@@ -12,6 +12,7 @@ import (
 
 type AES256CFBCipher struct {
 	secret []byte
+	salt   []byte
 	block  cipher.Block
 	enc    cipher.Stream
 	dec    cipher.Stream
@@ -23,6 +24,13 @@ func Secret(secret []byte) AES256CFBCipherOpt {
 		ac.secret = secret
 	}
 }
+
+func Salt(salt []byte) AES256CFBCipherOpt {
+	return func(ac *AES256CFBCipher) {
+		ac.salt = salt
+	}
+}
+
 func HexString(secret string) AES256CFBCipherOpt {
 	return func(ac *AES256CFBCipher) {
 		sec, err := hex.DecodeString(secret)
@@ -38,7 +46,7 @@ func NewAES256CFBCipher(opts ...AES256CFBCipherOpt) (*AES256CFBCipher, error) {
 	for _, opt := range opts {
 		opt(c)
 	}
-	key := secretToKey(c.secret, 32)
+	key := secretToKey(c.secret, 32, c.salt)
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
@@ -50,7 +58,7 @@ func NewAES256CFBCipher(opts ...AES256CFBCipherOpt) (*AES256CFBCipher, error) {
 	return c, nil
 }
 
-func secretToKey(secret []byte, size int) []byte {
+func secretToKey(secret []byte, size int, salt []byte) []byte {
 	// size mod 16 must be 0
 	h := md5.New()
 	buf := make([]byte, size)
@@ -58,7 +66,7 @@ func secretToKey(secret []byte, size int) []byte {
 	// repeatly fill the key with the secret
 	for i := 0; i < count; i++ {
 		h.Write(secret)
-		copy(buf[md5.Size*i:md5.Size*(i+1)-1], h.Sum(nil))
+		copy(buf[md5.Size*i:md5.Size*(i+1)-1], h.Sum(salt))
 	}
 	return buf
 }

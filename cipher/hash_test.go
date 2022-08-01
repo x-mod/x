@@ -2,7 +2,6 @@ package cipher
 
 import (
 	"encoding/hex"
-	"fmt"
 	"log"
 	"testing"
 
@@ -24,7 +23,7 @@ func TestHashCipher_Base64(t *testing.T) {
 	log.Println("s3:", s3)
 	assert.NotEqual(t, s1, s3)
 
-	cipher, err := NewAES256CFBCipher(Secret([]byte("adjflakdfja")))
+	cipher, err := NewAES256CFBCipher(Secret([]byte("adjflakdfja")), Salt([]byte("123456")))
 	assert.Nil(t, err)
 
 	enc, err := cipher.Encrypt([]byte("this is original data "))
@@ -41,12 +40,13 @@ func TestHashCipher_Base64(t *testing.T) {
 	assert.Nil(t, err)
 	log.Println("decode:", string(dec))
 
-	ns, err := cipher.Encrypt([]byte(fmt.Sprint(100023)))
+	ns, err := cipher.Encrypt([]byte("djsaklfjaldfjalskjdd---3424242fdkasldfjasdfjasdfaewafsafdeasdfsf"))
 	assert.Nil(t, err)
 	log.Println("encode num:", string(ns))
 	log.Println("encode num hex:", hex.EncodeToString(ns))
 
 	ne, err := cipher.Decrypt(ns)
 	assert.Nil(t, err)
-	log.Println("decode num:", string(ne))
+	assert.Equal(t, string(ne), "djsaklfjaldfjalskjdd---3424242fdkasldfjasdfjasdfaewafsafdeasdfsf")
+	// log.Println("decode num:", string(ne))
 }
